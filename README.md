@@ -11,10 +11,12 @@ For each database you would like to connect you must:
 * Inside the file add a line setting the environment variable: 
 	development database:
 
-	``` PGDATABASE=nc_news
+	``` 
+    PGDATABASE=nc_news
 	```
 
 	test database:
 
-	```PGDATABASE=nc_news_test
+	```
+    PGDATABASE=nc_news_test
 	```
