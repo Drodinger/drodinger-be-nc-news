@@ -45,3 +45,20 @@ describe('GET /api', () => {
         })
     })
 })
+describe('GET /api/articles/:article_id', () => {
+    test('when called with an existing id responds with status 200 and the relevant article object', () => {
+                return request(app).get('/api/articles/2')
+                    .expect(200)
+                    .then((res) => {
+                        expect(typeof res.body.article).toBe('object');
+                        expect(res.body.article).toHaveProperty('author');
+                        expect(res.body.article).toHaveProperty('title');
+                        expect(res.body.article).toHaveProperty('article_id');
+                        expect(res.body.article).toHaveProperty('body');
+                        expect(res.body.article).toHaveProperty('topic');
+                        expect(res.body.article).toHaveProperty('created_at');
+                        expect(res.body.article).toHaveProperty('votes');
+                        expect(res.body.article).toHaveProperty('article_img_url');
+                    })
+    })
+})
