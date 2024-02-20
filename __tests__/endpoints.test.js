@@ -3,6 +3,7 @@ const seed = require('../db/seeds/seed.js');
 const { topicData, userData, articleData, commentData } = require('../db/data/test-data/index.js'); 
 const db = require('../db/connection.js');
 const app = require('../app.js');
+const endpoints = require('../endpoints.json');
 
 beforeEach(() => seed({ topicData, userData, articleData, commentData }));
 
@@ -32,5 +33,15 @@ describe('request non-existent endpoint error handling', () => {
                 const msg = res.body.msg;
                 expect(msg).toEqual('Not found');
             })
+    })
+})
+
+describe('GET /api', () => {
+    test('responds with status 200 and an object containing objects with "description", "queries" and "exampleResponse" keys', () => {
+        return request(app).get('/api')
+        .expect(200)
+        .then((res) => {
+            expect(res.body.endpoints).toEqual(endpoints);
+        })
     })
 })
