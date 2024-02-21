@@ -105,5 +105,24 @@ describe('GET /api/articles', () => {
                     }
                 })
         })
+        test('array of articles is returned ordered by created_at (date the article was authored)', () => {
+            return request(app)
+                .get('/api/articles')
+                .then((res) => {
+                    const articles = res.body.articles;
+                    let prevDateNum = 0;
+                    for (let i = 0; i < articles.length; i++) {
+                        const article = articles[i];
+                        const dateStr = article.created_at;
+                        const dateNum = Number(dateStr.slice(0,4) + dateStr.slice(5,7) + dateStr.slice(8,10) + dateStr.slice(11,13) + dateStr.slice(14,16) + dateStr.slice(17,19)); 
+                        if (i === 0) {
+                            prevDateNum = dateNum;
+                        } else {
+                        expect(dateNum).toBeLessThanOrEqual(prevDateNum);
+                        prevDateNum = dateNum;
+                        }
+                    }
+                })
+        })
     })
 })
