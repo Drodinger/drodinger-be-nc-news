@@ -15,9 +15,12 @@ exports.getTopics = (req, res) => {
     })
 }
 
-exports.getArticleById = (req, res) => {
+exports.getArticleById = (req, res, next) => {
     retrieveArticleById(req.params.article_id)
     .then((article) => {
         res.status(200).send({ article });
+    })
+    .catch((err) => {
+        next(err);
     })
 }

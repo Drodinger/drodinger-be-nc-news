@@ -15,6 +15,9 @@ exports.retrieveTopics = () => {
 exports.retrieveArticleById = (id) => {
     return db.query('SELECT * FROM articles WHERE article_id = $1;', [id])
     .then((queryResult) => {
+        if (!queryResult.rows[0]) {
+            return {}
+        }
         return queryResult.rows[0];
     })
 }
