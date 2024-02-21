@@ -80,3 +80,49 @@ describe('GET /api/articles/:article_id', () => {
         })
     })
 })
+
+
+describe('GET /api/articles', () => {
+    describe('main functionality', () => {
+        test('responds with status 200 and an array of all articles with no "body" propety and containing the following properties: author, title, article_id, topic, created_at, votes, article_image_url, comment_count', () => {
+            return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then((res) => {
+                    const articles = res.body.articles;
+                    for (let article of articles) {
+                        expect(article).toMatchObject({
+                            author : expect.any(String),
+                            title: expect.any(String),
+                            article_id: expect.any(Number),
+                            topic: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                            article_img_url: expect.any(String),
+                            comment_count: expect.any(String)
+                        })
+                        expect(article.body).toBe(undefined);
+                    }
+                })
+        })
+        test('array of articles is returned ordered by created_at (date the article was authored)', () => {
+            return request(app)
+                .get('/api/articles')
+                .then((res) => {
+                    const articles = res.body.articles;
+                    let prevDateNum = 0;
+                    for (let i = 0; i < articles.length; i++) {
+                        const article = articles[i];
+                        const dateStr = article.created_at;
+                        const dateNum = Number(dateStr.slice(0,4) + dateStr.slice(5,7) + dateStr.slice(8,10) + dateStr.slice(11,13) + dateStr.slice(14,16) + dateStr.slice(17,19)); 
+                        if (i === 0) {
+                            prevDateNum = dateNum;
+                        } else {
+                        expect(dateNum).toBeLessThanOrEqual(prevDateNum);
+                        prevDateNum = dateNum;
+                        }
+                    }
+                })
+        })
+    })
+})

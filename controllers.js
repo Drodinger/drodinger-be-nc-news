@@ -1,16 +1,26 @@
-const { retrieveTopics, retrieveArticleById } = require('./models.js');
+const { retrieveTopics, retrieveArticles, retrieveArticleById } = require('./models.js');
 const endpoints = require('./endpoints.json');
 
 exports.getEndpoints = (req, res) => {
     res.status(200).send({ endpoints });
 }
 
-exports.getTopics = (req, res) => {
+exports.getTopics = (req, res, next) => {
     retrieveTopics()
     .then((topics) => {
         res.status(200).send({ topics });
     })
     .catch(() => {
+        next(err);
+    })
+}
+
+exports.getArticles = (req, res, next) => {
+    retrieveArticles()
+    .then((articles) =>{
+        res.status(200).send({ articles });
+    })
+    .catch((err) => {
         next(err);
     })
 }
