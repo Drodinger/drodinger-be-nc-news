@@ -80,3 +80,30 @@ describe('GET /api/articles/:article_id', () => {
         })
     })
 })
+
+
+describe('GET /api/articles', () => {
+    describe('main functionality', () => {
+        test('responds with status 200 and an array of all articles with no "body" propety and containing the following properties: author, title, article_id, topic, created_at, votes, article_image_url, comment_count', () => {
+            return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then((res) => {
+                    const articles = res.body.articles;
+                    for (let article of articles) {
+                        expect(article).toMatchObject({
+                            author : expect.any(String),
+                            title: expect.any(String),
+                            article_id: expect.any(Number),
+                            topic: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                            article_img_url: expect.any(String),
+                            comment_count: expect.any(String)
+                        })
+                        expect(article.body).toBe(undefined);
+                    }
+                })
+        })
+    })
+})
