@@ -39,10 +39,10 @@ describe('request non-existent endpoint error handling', () => {
 describe('GET /api', () => {
     test('responds with status 200 and an object containing objects with "description", "queries" and "exampleResponse" keys', () => {
         return request(app).get('/api')
-        .expect(200)
-        .then((res) => {
-            expect(res.body.endpoints).toEqual(endpoints);
-        })
+            .expect(200)
+            .then((res) => {
+                expect(res.body.endpoints).toEqual(endpoints);
+            })
     })
 })
 
@@ -67,9 +67,9 @@ describe('GET /api/articles/:article_id', () => {
     describe('Error handling', () => {
         test('when given syntactically correct but non-existent parameter responds with an empty object articles object on res.body', () => {
             return request(app).get('/api/articles/532939827')
-            .then((res) => {
-                expect(res.body.article).toEqual({});
-            })
+                .then((res) => {
+                    expect(res.body.article).toEqual({});
+                })
         })
         test('when given syntactically incorrect non-existent parameter responds with status 400', () => {
             return request(app).get('/api/articles/thisIsNotAValidQuery')
@@ -118,8 +118,8 @@ describe('GET /api/articles', () => {
                         if (i === 0) {
                             prevDateNum = dateNum;
                         } else {
-                        expect(dateNum).toBeLessThanOrEqual(prevDateNum);
-                        prevDateNum = dateNum;
+                            expect(dateNum).toBeLessThanOrEqual(prevDateNum);
+                            prevDateNum = dateNum;
                         }
                     }
                 })
@@ -162,25 +162,93 @@ describe('GET /api/articles/:article_id/comments', () => {
     })
 })
 describe('POST /api/articles/:article_id/comments', () => {
-    test.only('responds with code 201 and the message object', () => {
-        const testComment = {
-            "user": "lurker",
-            "body": "Hi there this is a test body"
-        }
-        return request(app)
-        .post('/api/articles/9/comments')
-        .send(testComment)
-        .expect(201)
-        .then((res) => {
-            const comment = res.body.comment;
-            expect(comment).toMatchObject({
-                comment_id: expect.any(Number),
-                votes: expect.any(Number),
-                created_at: expect.any(String),
-                author: expect.any(String),
-                body: expect.any(String),
-                article_id: expect.any(Number)
-            });
+    describe('main functionality', () => {
+        test('responds with code 201 and the message object', () => {
+            const testComment = {
+                "user": "lurker",
+                "body": "Hi there this is a test body"
+            }
+            return request(app)
+                .post('/api/articles/9/comments')
+                .send(testComment)
+                .expect(201)
+                .then((res) => {
+                    const comment = res.body.comment;
+                    expect(comment).toMatchObject({
+                        comment_id: expect.any(Number),
+                        votes: expect.any(Number),
+                        created_at: expect.any(String),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        article_id: expect.any(Number)
+                    });
+                })
+        })
+    })
+    describe('error handling', () => {
+        test('if article_id parameter is syntactically wrong returns 400 bad request', () => {
+            const testComment = {
+                "user": "lurker",
+                "body": "Hi there this is a test body"
+            }
+            return request(app)
+                .post('/api/articles/goop/comments')
+                .send(testComment)
+                .expect(400)
+                .then((res) => {
+                    expect(res.body.msg).toBe('Bad request');
+                })
+        })
+        test('if article_id parameter is syntactically correct but does not correspond to an article returns 404 not found', () => {
+            const testComment = {
+                "user": "lurker",
+                "body": "Hi there this is a test body"
+            }
+            return request(app)
+                .post('/api/articles/245/comments')
+                .send(testComment)
+                .expect(404)
+                .then((res) => {
+                    expect(res.body.msg).toBe('Not found');
+                })
+        })
+        test('if POST body has missing keys returns 400 bad request', () => {
+            const testComment = {
+                "body": "Hi there this is a test body"
+            }
+            return request(app)
+                .post('/api/articles/9/comments')
+                .send(testComment)
+                .expect(400)
+                .then((res) => {
+                    expect(res.body.msg).toBe('Bad request');
+                })
+        })
+        test('if POST body has values that cannot be accepted by the comments table returns 400 bad request', () => {
+            const testComment = {
+                "user": "lurker",
+                "body": 10
+            }
+            return request(app)
+                .post('/api/articles/9/comments')
+                .send(testComment)
+                .expect(400)
+                .then((res) => {
+                    expect(res.body.msg).toBe('Bad request');
+                })
+        })
+        test('if POST body has a non-existent author returns 404 not found', () => {
+            const testComment = {
+                "user": "Mr_Blobby",
+                "body": "Hi there, this is a test body"
+            }
+            return request(app)
+                .post('/api/articles/9/comments')
+                .send(testComment)
+                .expect(404)
+                .then((res) => {
+                    expect(res.body.msg).toBe('Not found');
+                })
         })
     })
 })
