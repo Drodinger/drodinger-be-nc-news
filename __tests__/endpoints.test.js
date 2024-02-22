@@ -252,3 +252,28 @@ describe('POST /api/articles/:article_id/comments', () => {
         })
     })
 })
+
+describe('PATCH /api/articles/:article_id', () => {
+    describe('main functionality', () => {
+        test('returns code 200 with the updated article', () => {
+            const testVote = { inc_votes: 7 };
+            return request(app)
+            .patch('/api/articles/12')
+            .send(testVote)
+            .expect(200)
+            .then((res) => {
+                expect(res.body.article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: 7,
+                    article_img_url: expect.any(String)
+                });
+            })
+        })
+    })
+})
+

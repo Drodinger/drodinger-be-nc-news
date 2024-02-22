@@ -79,3 +79,22 @@ exports.insertCommentByArticleId = (id, comment) => {
             return queryResult.rows[0];
         })
 }
+
+exports.updateArticleVotesById = (article_id, inc_votes) => {
+    const query = `
+    UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2;
+    `
+    return db.query(query, [ inc_votes, article_id ])
+    .then(() => {
+        return db.query(`
+            SELECT * FROM articles
+            WHERE article_id = $1
+            `
+        , [ article_id ])
+    })
+    .then((queryResponse) => {
+        return queryResponse.rows[0];
+    })
+} 
