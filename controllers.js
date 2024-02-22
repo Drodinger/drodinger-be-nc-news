@@ -59,6 +59,15 @@ exports.postCommentByArticleId = (req, res, next) => {
 exports.patchArticleById = (req, res, next) => {
     updateArticleVotesById(req.params.article_id, req.body.inc_votes)
     .then((article) => {
+        if (!article) {
+            return Promise.reject({
+                "status": 404,
+                "msg": "Not found"
+            });
+        }
         res.status(200).send({ article });
+    })
+    .catch((err) => {
+        next(err);
     })
 }

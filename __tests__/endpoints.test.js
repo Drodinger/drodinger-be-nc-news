@@ -275,5 +275,78 @@ describe('PATCH /api/articles/:article_id', () => {
             })
         })
     })
+    describe('error handling', () => {
+        test('responds to incorrect parameter syntax with 400 bad request', () => {
+            const testVotes = {
+                "inc_votes": 24
+            }
+            return request(app)
+                .patch('/api/articles/brandon')
+                .send(testVotes)
+                .expect(400)
+                .then((res) => {
+                    expect(res.body.msg).toBe('Bad request');
+                })
+        })
+        test('responds to non-existent but syntactically correct parameter with 404 not found', () => {
+            const testVotes = {
+                "inc_votes": 24
+            }
+            return request(app)
+                .patch('/api/articles/321')
+                .send(testVotes)
+                .expect(404)
+                .then((res) => {
+                    expect(res.body.msg).toBe('Not found');
+                })
+        })
+        test('responds to missing "inc_votes" key with 400 bad request', () => {
+            const testVotes = {
+            }
+            return request(app)
+                .patch('/api/articles/12')
+                .send(testVotes)
+                .expect(400)
+                .then((res) => {
+                    expect(res.body.msg).toBe('Bad request');
+                })
+        })
+        test('responds to "inc_votes" containing non-integer value with 400 bad request', () => {
+            const testVotes = {
+                "inc_votes": "doglet better than puppy?"
+            }
+            return request(app)
+                .patch('/api/articles/12')
+                .send(testVotes)
+                .expect(400)
+                .then((res) => {
+                    expect(res.body.msg).toBe('Bad request');
+                })
+        })
+        test('ignores extra properties on votes object, responds with 200 and updated article', () => {
+            const testVotes = {
+                "inc_votes": 14,
+                "chewing_gum": "whatever happened to hubbabubba?",
+                "I used to think": "corriander tasted like soap",
+                "but now I quite": "like it to be honest"
+            }
+            return request(app)
+                .patch('/api/articles/12')
+                .send(testVotes)
+                .expect(200)
+                .then((res) => {
+                expect(res.body.article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: 14,
+                    article_img_url: expect.any(String)
+                });
+                })
+        })
+    })
 })
 
