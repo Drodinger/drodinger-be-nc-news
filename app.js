@@ -1,5 +1,5 @@
 const express = require('express');
-const { getEndpoints, getTopics, getArticles, getArticleById } = require('./controllers.js');
+const { getEndpoints, getTopics, getArticles, getArticleById, getCommentsByArticleId } = require('./controllers.js');
 const { handleCustomErrors, handlePsqlErrors, handleServerErrors, handleNonexistentEndpoint } = require('./errors/index.js');
 const app = express();
 
@@ -9,6 +9,7 @@ app.get('/api', getEndpoints);
 app.get('/api/topics', getTopics);
 app.get('/api/articles', getArticles);
 app.get('/api/articles/:article_id', getArticleById);
+app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
 
 app.use('*', handleNonexistentEndpoint);
 

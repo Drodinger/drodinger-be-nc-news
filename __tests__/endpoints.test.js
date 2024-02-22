@@ -126,3 +126,38 @@ describe('GET /api/articles', () => {
         })
     })
 })
+describe('GET /api/articles/:article_id/comments', () => {
+    describe('main functionality', () => {
+        test('responds with status 200 and an array of objects', () => {
+            return request(app)
+                .get('/api/articles/9/comments')
+                .expect(200)
+                .then((res) => {
+                    const comments = res.body.comments;
+                    expect(Array.isArray(comments)).toBe(true);
+                    comments.forEach((comment) => {
+                        expect(Array.isArray(comment)).toBe(false);
+                        expect(typeof comment).toBe('object');
+                    })
+                })
+        })
+    })
+    describe('error handling', () => {
+        test('if article_id query syntax is good but no comments exist for that article_id returns custom 404 error with custom message', () => {
+            return request(app)
+                .get('/api/articles/4/comments')
+                .expect(404)
+                .then((res) => {
+                    expect(res.body.msg).toBe('No comments found for article_id: 4');
+                })
+        })
+        test('if article_id query syntax is incorrect returns 400 bad request', () => {
+            return request(app)
+                .get('/api/articles/82h/comments')
+                .expect(400)
+                .then((res) => {
+                    expect(res.body.msg).toEqual('Bad request');
+                })
+        })
+    })
+})
