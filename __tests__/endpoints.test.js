@@ -161,3 +161,26 @@ describe('GET /api/articles/:article_id/comments', () => {
         })
     })
 })
+describe('POST /api/articles/:article_id/comments', () => {
+    test.only('responds with code 201 and the message object', () => {
+        const testComment = {
+            "user": "lurker",
+            "body": "Hi there this is a test body"
+        }
+        return request(app)
+        .post('/api/articles/9/comments')
+        .send(testComment)
+        .expect(201)
+        .then((res) => {
+            const comment = res.body.comment;
+            expect(comment).toMatchObject({
+                comment_id: expect.any(Number),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                article_id: expect.any(Number)
+            });
+        })
+    })
+})
