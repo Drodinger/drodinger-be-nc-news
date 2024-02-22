@@ -38,13 +38,33 @@ exports.retrieveCommentsByArticleId = (id) => {
         WHERE comments.article_id = $1
         ORDER BY comments.created_at DESC;
         `, [id])
-    .then((queryResponse) => {
-        if (queryResponse.rows.length === 0) {
-            return Promise.reject({
-                status: 404,
-                msg: `No comments found for article_id: ${id}`
-            })
-        }
-        return queryResponse.rows;
-    })
+        .then((queryResponse) => {
+            if (queryResponse.rows.length === 0) {
+                return Promise.reject({
+                    status: 404,
+                    msg: `No comments found for article_id: ${id}`
+                })
+            }
+            return queryResponse.rows;
+        })
+}
+
+exports.insertCommentByArticleId = (id, comment) => {
+    const query = `
+    INSERT INTO comments
+    ( author, body, article_id )
+    VALUES
+    ( $1, $2, $3 )
+    `
+    return db.query(query, [ comment.user, comment.body, id ])
+        .then(() => {
+            return db.query(`
+                SELECT * FROM comments
+                ORDER BY comment_id DESC
+                LIMIT 1;
+                `)
+        })
+        .then((queryResult) =>{
+            return queryResult.rows[0];
+        })
 }
