@@ -50,6 +50,17 @@ exports.retrieveCommentsByArticleId = (id) => {
 }
 
 exports.insertCommentByArticleId = (id, comment) => {
+    if (!comment.user || !comment.body) {
+        return Promise.reject({
+            status: 400,
+            msg: 'Bad request'
+        })
+    } else if (typeof comment.user !== 'string' || typeof comment.body !== 'string') {
+        return Promise.reject({
+            status: 400,
+            msg: 'Bad request'
+        })
+    }
     const query = `
     INSERT INTO comments
     ( author, body, article_id )
