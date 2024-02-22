@@ -1,4 +1,4 @@
-const { retrieveTopics, retrieveArticles, retrieveArticleById } = require('./models.js');
+const { retrieveTopics, retrieveArticles, retrieveArticleById, retrieveCommentsByArticleId } = require('./models.js');
 const endpoints = require('./endpoints.json');
 
 exports.getEndpoints = (req, res) => {
@@ -29,6 +29,16 @@ exports.getArticleById = (req, res, next) => {
     retrieveArticleById(req.params.article_id)
     .then((article) => {
         res.status(200).send({ article });
+    })
+    .catch((err) => {
+        next(err);
+    })
+}
+
+exports.getCommentsByArticleId = (req, res, next) => {
+    retrieveCommentsByArticleId(req.params.article_id)
+    .then((comments) => {
+        res.status(200).send({ comments });
     })
     .catch((err) => {
         next(err);

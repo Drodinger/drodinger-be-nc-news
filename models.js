@@ -32,4 +32,19 @@ exports.retrieveArticleById = (id) => {
         })
 }
 
-//'SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id COUNT(comments.article_id) GROUP BY comments.article_id ORDER BY articles.created_at;' 
+exports.retrieveCommentsByArticleId = (id) => {
+    return db.query(`
+        SELECT * FROM comments
+        WHERE comments.article_id = $1
+        ORDER BY comments.created_at DESC;
+        `, [id])
+    .then((queryResponse) => {
+        if (queryResponse.rows.length === 0) {
+            return Promise.reject({
+                status: 404,
+                msg: `No comments found for article_id: ${id}`
+            })
+        }
+        return queryResponse.rows;
+    })
+}
