@@ -1,5 +1,4 @@
 const db = require('./db/connection.js');
-const format = require('pg-format');
 
 exports.retrieveTopics = () => {
     const queryString = 'SELECT topics.slug, topics.description FROM topics';
