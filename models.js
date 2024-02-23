@@ -114,3 +114,10 @@ exports.removeCommentById = (comment_id) => {
             return;
         })
 }
+
+exports.retrieveUsers = () => {
+    return db.query(`SELECT username, name, avatar_url FROM users;`)
+        .then((queryResult) => {
+            return queryResult.rows;
+        })
+}

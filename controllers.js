@@ -1,4 +1,4 @@
-const { retrieveTopics, retrieveArticles, retrieveArticleById, retrieveCommentsByArticleId, insertCommentByArticleId, updateArticleVotesById, removeCommentById } = require('./models.js');
+const { retrieveTopics, retrieveArticles, retrieveArticleById, retrieveCommentsByArticleId, insertCommentByArticleId, updateArticleVotesById, removeCommentById, retrieveUsers } = require('./models.js');
 const endpoints = require('./endpoints.json');
 
 exports.getEndpoints = (req, res) => {
@@ -80,4 +80,14 @@ exports.deleteCommentById = (req, res, next) => {
         .catch((err) => {
             next(err);
         })
+}
+
+exports.getUsers = (req, res, next) => {
+    retrieveUsers()
+    .then((users) => {
+        res.status(200).send({ users });
+    })
+    .catch((err) => {
+        next(err);
+    })
 }

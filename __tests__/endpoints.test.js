@@ -387,3 +387,22 @@ describe('DELETE /api/comments/:comment_id', () => {
     })
 })
 
+describe('GET /api/users', () => {
+    describe('main functionality', () => {
+        test('responds with 200 and array of all user objects each with and only with the following properties: "username", "name" and "avatar_url"', () => {
+            return request(app)
+                .get('/api/users')
+                .expect(200)
+                .then((res) => {
+                    res.body.users.forEach((user) => {
+                        expect(user).toMatchObject({
+                            "username": expect.any(String),
+                            "name": expect.any(String),
+                            "avatar_url": expect.any(String)
+                        });
+                    });
+                    expect(res.body.users.length).toBe(4);
+                })
+        })
+    })
+})
