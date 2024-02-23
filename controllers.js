@@ -1,4 +1,4 @@
-const { retrieveTopics, retrieveArticles, retrieveArticleById, retrieveCommentsByArticleId, insertCommentByArticleId} = require('./models.js');
+const { retrieveTopics, retrieveArticles, retrieveArticleById, retrieveCommentsByArticleId, insertCommentByArticleId, updateArticleVotesById} = require('./models.js');
 const endpoints = require('./endpoints.json');
 
 exports.getEndpoints = (req, res) => {
@@ -54,4 +54,20 @@ exports.postCommentByArticleId = (req, res, next) => {
             next(err);
         })
 
+}
+
+exports.patchArticleById = (req, res, next) => {
+    updateArticleVotesById(req.params.article_id, req.body.inc_votes)
+    .then((article) => {
+        if (!article) {
+            return Promise.reject({
+                "status": 404,
+                "msg": "Not found"
+            });
+        }
+        res.status(200).send({ article });
+    })
+    .catch((err) => {
+        next(err);
+    })
 }
