@@ -402,7 +402,6 @@ describe('GET /api/users', () => {
                         });
                     });
                     expect(res.body.users.length).toBe(4);
-                    console.log(res.body.users);
                 })
         })
     })
