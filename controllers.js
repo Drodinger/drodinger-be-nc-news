@@ -1,4 +1,4 @@
-const { retrieveTopics, retrieveArticles, retrieveArticleById, retrieveCommentsByArticleId, insertCommentByArticleId, updateArticleVotesById} = require('./models.js');
+const { retrieveTopics, retrieveArticles, retrieveArticleById, retrieveCommentsByArticleId, insertCommentByArticleId, updateArticleVotesById, removeCommentById } = require('./models.js');
 const endpoints = require('./endpoints.json');
 
 exports.getEndpoints = (req, res) => {
@@ -58,16 +58,26 @@ exports.postCommentByArticleId = (req, res, next) => {
 
 exports.patchArticleById = (req, res, next) => {
     updateArticleVotesById(req.params.article_id, req.body.inc_votes)
-    .then((article) => {
-        if (!article) {
-            return Promise.reject({
-                "status": 404,
-                "msg": "Not found"
-            });
-        }
-        res.status(200).send({ article });
-    })
-    .catch((err) => {
-        next(err);
-    })
+        .then((article) => {
+            if (!article) {
+                return Promise.reject({
+                    "status": 404,
+                    "msg": "Not found"
+                });
+            }
+            res.status(200).send({ article });
+        })
+        .catch((err) => {
+            next(err);
+        })
+}
+
+exports.deleteCommentById = (req, res, next) => {
+    removeCommentById(req.params.comment_id)
+        .then(() => {
+            res.status(204).send({ "msg": "No content" });
+        })
+        .catch((err) => {
+            next(err);
+        })
 }

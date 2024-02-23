@@ -258,21 +258,21 @@ describe('PATCH /api/articles/:article_id', () => {
         test('returns code 200 with the updated article', () => {
             const testVote = { inc_votes: 7 };
             return request(app)
-            .patch('/api/articles/12')
-            .send(testVote)
-            .expect(200)
-            .then((res) => {
-                expect(res.body.article).toMatchObject({
-                    article_id: expect.any(Number),
-                    title: expect.any(String),
-                    topic: expect.any(String),
-                    author: expect.any(String),
-                    body: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: 7,
-                    article_img_url: expect.any(String)
-                });
-            })
+                .patch('/api/articles/12')
+                .send(testVote)
+                .expect(200)
+                .then((res) => {
+                    expect(res.body.article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: 7,
+                        article_img_url: expect.any(String)
+                    });
+                })
         })
     })
     describe('error handling', () => {
@@ -335,16 +335,53 @@ describe('PATCH /api/articles/:article_id', () => {
                 .send(testVotes)
                 .expect(200)
                 .then((res) => {
-                expect(res.body.article).toMatchObject({
-                    article_id: expect.any(Number),
-                    title: expect.any(String),
-                    topic: expect.any(String),
-                    author: expect.any(String),
-                    body: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: 14,
-                    article_img_url: expect.any(String)
-                });
+                    expect(res.body.article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: 14,
+                        article_img_url: expect.any(String)
+                    });
+                })
+        })
+    })
+})
+
+describe('DELETE /api/comments/:comment_id', () => {
+    describe('main functionality', () => {
+        test('returns code 204 and deletes specified comment from comments table', () => {
+            return request(app)
+                .delete('/api/comments/5')
+                .expect(204)
+                .then(() => {
+                    return db.query(`
+                            SELECT * FROM comments
+                            WHERE comment_id = 5;
+                        `);
+                })
+                .then((queryResponse) => {
+                    expect(queryResponse.rows.length).toBe(0);
+                })
+        })
+    })
+    describe('error handling', () => {
+        test('if comment_id parameter is syntactically incorrect responds with 400 bad request', () => {
+            return request(app)
+                .delete('/api/comments/haha')
+                .expect(400)
+                .then((res) => {
+                    expect(res.body.msg).toBe('Bad request');
+                })
+        })
+        test('if comment_id parameter is syntactically correct but no corresponding comment exists responds with 404 not found', () => {
+            return request(app)
+                .delete('/api/comments/254')
+                .expect(404)
+                .then((res) =>{
+                    expect(res.body.msg).toBe('Not found');
                 })
         })
     })

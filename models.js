@@ -87,14 +87,31 @@ exports.updateArticleVotesById = (article_id, inc_votes) => {
     WHERE article_id = $2;
     `
     return db.query(query, [ inc_votes, article_id ])
-    .then(() => {
-        return db.query(`
-            SELECT * FROM articles
-            WHERE article_id = $1
-            `
-        , [ article_id ])
-    })
-    .then((queryResponse) => {
-        return queryResponse.rows[0];
-    })
+        .then(() => {
+            return db.query(`
+                SELECT * FROM articles
+                WHERE article_id = $1
+                `
+                , [ article_id ])
+        })
+        .then((queryResponse) => {
+            return queryResponse.rows[0];
+        })
 } 
+
+exports.removeCommentById = (comment_id) => {
+    const query = `
+    DELETE FROM comments
+    WHERE comment_id = $1;
+    `;
+    return db.query(query, [ comment_id ])
+        .then((queryResponse) => {
+            if (!queryResponse.rowCount) {
+                return Promise.reject({
+                    "status": 404,
+                    "msg": "Not found"
+                })
+            }
+            return;
+        })
+}
