@@ -79,7 +79,6 @@ For the main functionality or to test utilities:
 npm test __tests__/utils.test.js 
 ```
 
-
 ## Running nc_news in production
 
 1. Fork and clone the repo
