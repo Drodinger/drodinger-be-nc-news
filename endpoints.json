@@ -56,7 +56,7 @@
     },
     "GET /api/articles/:article_id": {
         "description": "serves the article object associated with article_id",
-        "queries": [1, 2, 3, 4, "...etc"],
+        "queries": [],
         "exampleResponse": {
             "article": {
                 "title": "Seafood substitutions are increasing",
@@ -71,7 +71,7 @@
     },
     "GET /api/articles/:article_id/comments": {
         "description": "serves an array of all comments associated with article_id ordered in descending order of creation date",
-        "queries": [1, 2, 3, 4, "...etc"],
+        "queries": [],
         "exampleResponse": {
             "comments": [
 
@@ -97,7 +97,7 @@
     },
     "PATCH /api/articles/:article_id": {
         "description": "Updates the votes value of an article selected by article_id, with key value pair of inc_votes: <number_of_votes> passed in the request body, responds with the updated article object",
-        "queries": [1, 2, 3, 4, "...etc"],
+        "queries": [],
         "exampleResponse": {
             "article": {
                 "title": "Seafood substitutions are increasing",
@@ -112,7 +112,7 @@
     },
     "DELETE /api/comments/:comment_id": {
         "description": "Deletes comment specified in passed parameter comment_id, returns 200 no content",
-        "queries": [1, 2, 3, 4, "...etc"],
+        "queries": [],
         "exampleResponse": {
             "msg": "No content"
         } 
