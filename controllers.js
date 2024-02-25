@@ -16,7 +16,8 @@ exports.getTopics = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    retrieveArticles()
+    const { topic } = req.query;
+    retrieveArticles(topic)
         .then((articles) =>{
             res.status(200).send({ articles });
         })
@@ -84,10 +85,10 @@ exports.deleteCommentById = (req, res, next) => {
 
 exports.getUsers = (req, res, next) => {
     retrieveUsers()
-    .then((users) => {
-        res.status(200).send({ users });
-    })
-    .catch((err) => {
-        next(err);
-    })
+        .then((users) => {
+            res.status(200).send({ users });
+        })
+        .catch((err) => {
+            next(err);
+        })
 }

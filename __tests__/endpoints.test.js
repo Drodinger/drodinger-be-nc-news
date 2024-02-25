@@ -64,7 +64,7 @@ describe('GET /api/articles/:article_id', () => {
                 })
         })
     })
-    describe.only('feature request, returns number of associated comments of article', () => {
+    describe('feature request, returns number of associated comments of article', () => {
         test('when called with an existing id response article object has comment_count property (number of associated comments)', () => {
             return request(app).get('/api/articles/9')
                 .expect(200)
@@ -132,6 +132,47 @@ describe('GET /api/articles', () => {
                         }
                     }
                 })
+        })
+    })
+    describe('FEATURE optional filtering by topic: GET /api/articles?/:topic', () => {
+        describe('Main functionality', () => {
+            test('responds with 200 and array of articles of specified topic', () => {
+                return request(app)
+                    .get('/api/articles?topic=mitch')
+                    .expect(200)
+                    .then((res) => {
+                        res.body.articles.forEach((article) => {
+                            expect(article).toMatchObject({
+                                author : expect.any(String),
+                                title: expect.any(String),
+                                article_id: expect.any(Number),
+                                topic: "mitch",
+                                created_at: expect.any(String),
+                                votes: expect.any(Number),
+                                article_img_url: expect.any(String),
+                                comment_count: expect.any(String)
+                            })
+                        })
+                    })
+            })
+        })
+        describe('Error handling', () => {
+            test('If bad topic query syntax (query is not a string) responds with 400 bad request', () => {
+                return request(app)
+                    .get('/api/articles?topic=mitch&topic=cats')
+                    .expect(400)
+                    .then((res) => {
+                        expect(res.body.msg).toBe('Bad request');
+                    })
+            })
+            test('If non-existent topic query responds with 404 not found', () => {
+                return request(app)
+                    .get('/api/articles?topic=swarley')
+                    .expect(404)
+                    .then((res) => {
+                        expect(res.body.msg).toBe('Not found');
+                    })
+            })
         })
     })
 })
@@ -367,8 +408,8 @@ describe('DELETE /api/comments/:comment_id', () => {
                 .expect(204)
                 .then(() => {
                     return db.query(`
-                            SELECT * FROM comments
-                            WHERE comment_id = 5;
+                        SELECT * FROM comments
+                        WHERE comment_id = 5;
                         `);
                 })
                 .then((queryResponse) => {

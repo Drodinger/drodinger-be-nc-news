@@ -8,25 +8,51 @@ exports.retrieveTopics = () => {
         })
 }
 
-exports.retrieveArticles = () => {
-    return db.query(`
+exports.retrieveArticles = (topic) => {
+    if (topic) {
+        if (typeof topic === 'string') {
+            const query = `
+            SELECT * FROM (
+                SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count
+                FROM articles 
+                LEFT JOIN comments ON articles.article_id = comments.article_id
+                GROUP BY articles.article_id
+                ORDER BY articles.created_at DESC
+            ) AS articles_comment_count
+            WHERE articles_comment_count.topic = $1;
+            `;
+            return db.query(query, [ topic ])
+                .then((queryResult) => {
+                    if (queryResult.rows.length < 1) {
+                        return Promise.reject({ "status": 404, "msg": "Not found" });
+                    } else {
+                        return queryResult.rows;
+                    }
+                })
+        } else {
+            return Promise.reject({ "status": 400, "msg": "Bad request"});
+        }
+    } else {
+        const query = `
         SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count
         FROM articles 
         LEFT JOIN comments ON articles.article_id = comments.article_id
         GROUP BY articles.article_id
         ORDER BY articles.created_at DESC;
-        `)
-        .then((queryResult) => {
-            return queryResult.rows;
-        })
+        `;
+        return db.query(query)
+            .then((queryResult) => {
+                return queryResult.rows;
+            })
+    }
 }
 
 exports.retrieveArticleById = (id) => {
-        return db.query(`SELECT * FROM (SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles
+    return db.query(`SELECT * FROM (SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles
         LEFT JOIN comments
         ON articles.article_id = comments.article_id
         GROUP BY articles.article_id) AS articles_comment_count
-WHERE articles_comment_count.article_id = $1;`, [id])
+        WHERE articles_comment_count.article_id = $1;`, [id])
         .then((queryResult) => {
             if (!queryResult.rows[0]) {
                 return {}
