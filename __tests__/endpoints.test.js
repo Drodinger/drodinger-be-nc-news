@@ -64,6 +64,15 @@ describe('GET /api/articles/:article_id', () => {
                 })
         })
     })
+    describe.only('feature request, returns number of associated comments of article', () => {
+        test('when called with an existing id response article object has comment_count property (number of associated comments)', () => {
+            return request(app).get('/api/articles/9')
+                .expect(200)
+                .then((res) => {
+                    expect(res.body.article.comment_count).toBe(2);
+                });
+        })
+    })
     describe('Error handling', () => {
         test('when given syntactically correct but non-existent parameter responds with an empty object articles object on res.body', () => {
             return request(app).get('/api/articles/532939827')
